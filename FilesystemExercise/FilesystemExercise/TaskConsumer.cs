@@ -8,8 +8,12 @@ namespace FilesystemExercise
 {
     public class TaskConsumer
     {
+        private const int ThresholdFileSize = 10 * 1024 * 1024;
+
         Queue<string> tasks = new();
         TaskConsumerListener thisListener = null;
+
+        List<string> searchResults = new();
 
         bool pause = false;
         bool stop = false;
@@ -41,8 +45,31 @@ namespace FilesystemExercise
         {
             var currentPath = tasks.Dequeue();
 
-            if (!Path.Exists(currentPath)) {
+            if (!Path.Exists(currentPath))
+            {
                 Console.WriteLine("The path " + currentPath + " doesn't exist.");
+                return;
+            }
+
+            if (Directory.Exists(currentPath))
+            {
+                foreach (var file in Directory.EnumerateFiles(currentPath))
+                {
+                    var fileInfo = new FileInfo(file);
+                    if (fileInfo.Length >= ThresholdFileSize)
+                    {
+                        searchResults.Add(currentPath);
+                    }
+                }
+
+                foreach (var folder in Directory.EnumerateDirectories(currentPath))
+                {
+                    tasks.Enqueue(folder);
+                }
+            }
+            else
+            {
+                Console.WriteLine("This path is not a directory ", currentPath);
             }
         }
 
