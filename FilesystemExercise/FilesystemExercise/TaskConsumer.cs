@@ -35,6 +35,15 @@ namespace FilesystemExercise
             pause = false;
         }
 
+        private void examinePath()
+        {
+            var currentPath = tasks.Dequeue();
+
+            if (!Path.Exists(currentPath)) {
+                Console.WriteLine("The path " + currentPath + " doesn't exist.");
+            }
+        }
+
 
     }
 }
