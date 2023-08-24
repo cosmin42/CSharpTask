@@ -22,13 +22,13 @@
                     HorizontalOptions="Center" />
 
                 <Label
-                    Text="Hello, World!"
+                    Text="C# Exercise"
                     SemanticProperties.HeadingLevel="Level1"
                     FontSize="32"
                     HorizontalOptions="Center" />
 
                 <Label
-                    Text="Welcome to .NET Multi-platform App UI"
+                    Text="Search folders that contain files bigger than 10 MB!"
                     SemanticProperties.HeadingLevel="Level2"
                     SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                     FontSize="18"
