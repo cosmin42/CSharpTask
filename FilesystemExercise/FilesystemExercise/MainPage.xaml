@@ -74,7 +74,9 @@
                     <ActivityIndicator x:Name="WaitingIndicator" IsRunning="False" IsVisible="False" />
 
                 </HorizontalStackLayout>
-                <ListView VerticalOptions="StartAndExpand"
+                <ListView
+                    VerticalOptions="Start"
+                    MaximumHeightRequest="500"
                     x:Name="itemListView">
                     <ListView.ItemTemplate>
                         <DataTemplate>
