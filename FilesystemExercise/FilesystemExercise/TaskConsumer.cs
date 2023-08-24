@@ -19,7 +19,7 @@ namespace FilesystemExercise
 
         public void Stop() { }
 
-        public void Ppause() { }
+        public void Pause() { }
 
 
     }
