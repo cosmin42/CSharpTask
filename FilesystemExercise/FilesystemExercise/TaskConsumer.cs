@@ -59,6 +59,7 @@ namespace FilesystemExercise
                     if (fileInfo.Length >= ThresholdFileSize)
                     {
                         searchResults.Add(currentPath);
+                        thisListener.newFolderFound(currentPath);
                     }
                 }
 
