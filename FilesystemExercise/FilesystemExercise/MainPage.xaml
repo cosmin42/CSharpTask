@@ -46,6 +46,29 @@
                     Padding="30,0"
                     VerticalOptions="Center"
                     x:Name="searchButtonsLayout">
+
+                    <Button
+                        x:Name="PauseBtn"
+                        Text="Pause"
+                        SemanticProperties.Hint="Pause the search"
+                        Clicked="OnPauseBtnClicked"
+                        HorizontalOptions="Center" />
+
+                    <Button
+                        x:Name="ResumeBtn"
+                        Text="Resume"
+                        SemanticProperties.Hint="Resume the search"
+                        Clicked="OnResumeBtnClicked"
+                        HorizontalOptions="Center" />
+
+                    <Button
+                        x:Name="StopBtn"
+                        Text="Stop"
+                        SemanticProperties.Hint="Stop the search"
+                        Clicked="OnStopBtnClicked"
+                        HorizontalOptions="Center" />
+
+
                 </HorizontalStackLayout>
             </VerticalStackLayout>
         </HorizontalStackLayout>

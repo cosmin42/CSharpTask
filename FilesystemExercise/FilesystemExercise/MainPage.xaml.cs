@@ -39,6 +39,18 @@ namespace FilesystemExercise
             RefreshDriveList();
         }
 
+        private void OnPauseBtnClicked(object sender, EventArgs e)
+        {
+        }
+
+        private void OnResumeBtnClicked(object sender, EventArgs e)
+        {
+        }
+
+        private void OnStopBtnClicked(object sender, EventArgs e)
+        {
+        }
+
         public void RefreshDriveList()
         {
             var driveInfo = DriveInfo.GetDrives();
