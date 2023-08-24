@@ -98,7 +98,7 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        private (List<string> ExpansionPaths, List<string> ValidDirectories) examineSinglePath(string currentPath)
+        private (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
         {
             var newPaths = new List<string>();
             var newValidDirectories = new List<string>();
@@ -157,21 +157,34 @@ namespace FilesystemExercise
 
         private void ExamineNextPath()
         {
-            var currentPath = examinationTasks.Dequeue();
+            Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[] dispatchedTasks = new Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[Math.Min(examinationTasks.Count, MAXThreadCount)];
 
-            var (ExpansionPaths, ValidDirectories) = examineSinglePath(currentPath);
-
-            searchResults.AddRange(ValidDirectories);
-
-            foreach (var item in ExpansionPaths)
+            for (var i = 0; i < MAXThreadCount && examinationTasks.Count > 0; ++i)
             {
-                examinationTasks.Enqueue(item);
+                var currentPath = examinationTasks.Dequeue();
+
+                Task<(List<string> ExpansionPaths, List<string> ValidDirectories)> t = Task.Run(() => ExamineSinglePath(currentPath));
+
+                dispatchedTasks[i] = t;
             }
 
-            mainSyncContext.Post(state =>
+            Task.WaitAll(dispatchedTasks);
+
+            foreach (var task in dispatchedTasks)
             {
-                thisListener.NewFolderFound(ValidDirectories);
-            }, null);
+                var (ExpansionPaths, ValidDirectories) = task.Result;
+                searchResults.AddRange(ValidDirectories);
+
+                foreach (var item in ExpansionPaths)
+                {
+                    examinationTasks.Enqueue(item);
+                }
+
+                mainSyncContext.Post(state =>
+                {
+                    thisListener.NewFolderFound(ValidDirectories);
+                }, null);
+            }
         }
     }
 }
