@@ -71,6 +71,7 @@
                         IsEnabled="False"
                         HorizontalOptions="Center" />
 
+                    <ActivityIndicator x:Name="WaitingIndicator" IsRunning="False" IsVisible="False" />
 
                 </HorizontalStackLayout>
             </VerticalStackLayout>
