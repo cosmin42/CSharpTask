@@ -2,36 +2,11 @@
 
 namespace FilesystemExercise
 {
-
-    public class ConsumerListenerImpl : TaskConsumerListener
-    {
-        public void cancelled()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void finished()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void newFolderFound(string folderName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void stopped()
-        {
-            throw new NotImplementedException();
-        }
-    }
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, TaskConsumerListener
     {
         List<Button> driveButtons = new();
 
         TaskConsumer taskConsumer = null;
-
-        ConsumerListenerImpl consumerListener = new();
 
         public MainPage()
         {
@@ -95,8 +70,28 @@ namespace FilesystemExercise
             if (taskConsumer != null)
             {
                 string rootPath = driveInfo.RootDirectory.ToString();
-                taskConsumer = new TaskConsumer(rootPath, consumerListener);
+                taskConsumer = new TaskConsumer(rootPath, this);
             }
+        }
+
+        public void cancelled()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void stopped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void finished()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void newFolderFound(string folderName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
