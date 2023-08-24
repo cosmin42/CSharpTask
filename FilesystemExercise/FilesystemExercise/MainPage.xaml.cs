@@ -77,20 +77,25 @@ namespace FilesystemExercise
             }
         }
 
-        public void cancelled()
+        public void paused()
         {
-            throw new NotImplementedException();
+            PauseBtn.IsEnabled = false;
+            StopBtn.IsEnabled = false;
+            ResumeBtn.IsEnabled = true;
         }
 
         public void stopped()
         {
-            PauseBtn.IsEnabled = true;
-            StopBtn.IsEnabled = true;
+            PauseBtn.IsEnabled = false;
+            StopBtn.IsEnabled = false;
+            ResumeBtn.IsEnabled = false;
         }
 
         public void finished()
         {
-            throw new NotImplementedException();
+            PauseBtn.IsEnabled = false;
+            StopBtn.IsEnabled = false;
+            ResumeBtn.IsEnabled = false;
         }
 
         public void newFolderFound(string folderName)

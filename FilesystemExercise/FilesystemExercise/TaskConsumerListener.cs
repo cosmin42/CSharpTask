@@ -8,7 +8,7 @@ namespace FilesystemExercise
 {
     public interface TaskConsumerListener
     {
-        void cancelled();
+        void paused();
         void stopped();
         void finished();
 
