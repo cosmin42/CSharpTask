@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace FilesystemExercise
 
         private Queue<string> bfsQueue = new();
         private Stack<string> reverseBfs = new();
-        private Queue<(string, bool, long, int)> detailsQueue = new();
+        private Queue<string> detailsQueue = new();
         private Dictionary<string, (bool, long, int)> details = new();
 
         readonly TaskConsumerListener thisListener = null;
@@ -52,7 +53,7 @@ namespace FilesystemExercise
 
             bool cachedPause = pause;
 
-            while (!stop && bfsQueue.Count > 0)
+            while (!stop && (bfsQueue.Count > 0 || detailsQueue.Count > 0))
             {
                 if (!cachedPause && pause)
                 {
@@ -76,7 +77,14 @@ namespace FilesystemExercise
                 }
                 else
                 {
-                    ExamineNextPath();
+                    if (fillingStage)
+                    {
+                        FillNext();
+                    }
+                    else
+                    {
+                        ProcessNextPath();
+                    }
                 }
             }
             if (stop)
@@ -119,7 +127,7 @@ namespace FilesystemExercise
             IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
             try
             {
-                directoryEnumeration = Directory.EnumerateFiles(currentPath);
+                directoryEnumeration = Directory.EnumerateDirectories(currentPath);
             }
             catch
             {
@@ -136,7 +144,7 @@ namespace FilesystemExercise
                 fillingStage = false;
                 while (reverseBfs.Count > 0)
                 {
-                    detailsQueue.Enqueue((reverseBfs.Pop(), false, 0, 0));
+                    detailsQueue.Enqueue(reverseBfs.Pop());
                 }
             }
         }
@@ -146,7 +154,7 @@ namespace FilesystemExercise
             IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
             try
             {
-                directoryEnumeration = Directory.EnumerateFiles(currentPath);
+                directoryEnumeration = Directory.EnumerateDirectories(currentPath);
             }
             catch
             {
@@ -156,7 +164,7 @@ namespace FilesystemExercise
             IEnumerable<string> filesEnumeration = Enumerable.Empty<string>();
             try
             {
-                filesEnumeration = Directory.EnumerateDirectories(currentPath);
+                filesEnumeration = Directory.EnumerateFiles(currentPath);
             }
             catch
             {
@@ -166,10 +174,8 @@ namespace FilesystemExercise
         }
 
 
-        private void ProcessPath(string currentPath)
+        private (bool, long, int) ProcessPath(string currentPath)
         {
-            var currentPathDetails = detailsQueue.Dequeue();
-
             var (files, directories) = GetFilesDirectoriesEnumeration(currentPath);
 
             var (bigFile, size, count) = (false, (long)0, (int)0);
@@ -193,6 +199,21 @@ namespace FilesystemExercise
                 (bigFile, size, count) = (bigFile | (directoryInfo.Length > ThresholdFileSize), size + directoryInfo.Length, count + 1);
             }
             details[currentPath] = (bigFile, size, count);
+
+            return (bigFile, size, count);
+        }
+
+        private void ProcessNextPath()
+        {
+            var currentPath = detailsQueue.Dequeue();
+            var (bigFile, size, count) = ProcessPath(currentPath);
+            if (bigFile)
+            {
+                mainSyncContext.Post(state =>
+                {
+                    thisListener.NewFolderFound(new List<string> { currentPath + " " + (size/(1024 * 1024)) + "MB " + count + " files" });
+                }, null);
+            }
         }
 
 
