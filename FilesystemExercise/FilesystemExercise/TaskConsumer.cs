@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -104,7 +105,15 @@ namespace FilesystemExercise
 
             if (Directory.Exists(currentPath))
             {
-                foreach (var file in Directory.EnumerateFiles(currentPath))
+                IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
+                try
+                {
+                    directoryEnumeration = Directory.EnumerateFiles(currentPath);
+                }
+                catch {
+                    Console.WriteLine("Access not permitted");
+                }
+                foreach (var file in directoryEnumeration)
                 {
                     var fileInfo = new FileInfo(file);
                     if (fileInfo.Length >= ThresholdFileSize)
@@ -119,7 +128,17 @@ namespace FilesystemExercise
                     }
                 }
 
-                foreach (var folder in Directory.EnumerateDirectories(currentPath))
+                IEnumerable<string> filesEnumeration = Enumerable.Empty<string>();
+                try
+                {
+                    filesEnumeration = Directory.EnumerateDirectories(currentPath);
+                }
+                catch
+                {
+                    Console.WriteLine("Access not permitted");
+                }
+
+                foreach (var folder in filesEnumeration)
                 {
                     examinationTasks.Enqueue(folder);
                 }
