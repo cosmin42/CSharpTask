@@ -15,6 +15,6 @@ namespace FilesystemExercise
         void Stopped();
         void Finished();
 
-        void NewFolderFound(string folderName);
+        void NewFolderFound(List<string> folderName);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FilesystemExercise
 {
@@ -11,7 +12,10 @@ namespace FilesystemExercise
     {
         private const int ThresholdFileSize = 10 * 1024 * 1024;
 
+        private const int MAXThreadCount = 4;
+
         Queue<string> examinationTasks = new();
+
         TaskConsumerListener thisListener = null;
 
         List<string> searchResults = new();
@@ -94,14 +98,15 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        private void ExamineNextPath()
+        private (List<string> ExpansionPaths, List<string> ValidDirectories) examineSinglePath(string currentPath)
         {
-            var currentPath = examinationTasks.Dequeue();
+            var newPaths = new List<string>();
+            var newValidDirectories = new List<string>();
 
             if (!Path.Exists(currentPath))
             {
                 Console.WriteLine("The path " + currentPath + " doesn't exist.");
-                return;
+                return (ExpansionPaths: newPaths, ValidDirectories: newValidDirectories);
             }
 
             if (Directory.Exists(currentPath))
@@ -111,19 +116,17 @@ namespace FilesystemExercise
                 {
                     directoryEnumeration = Directory.EnumerateFiles(currentPath);
                 }
-                catch {
+                catch
+                {
                     Console.WriteLine("Access not permitted");
                 }
+
                 foreach (var file in directoryEnumeration)
                 {
                     var fileInfo = new FileInfo(file);
                     if (fileInfo.Length >= ThresholdFileSize)
                     {
-                        searchResults.Add(currentPath);
-                        mainSyncContext.Post(state =>
-                        {
-                            thisListener.NewFolderFound(currentPath);
-                        }, null);
+                        newValidDirectories.Add(currentPath);
 
                         break;
                     }
@@ -141,13 +144,34 @@ namespace FilesystemExercise
 
                 foreach (var folder in filesEnumeration)
                 {
-                    examinationTasks.Enqueue(folder);
+                    newPaths.Add(folder);
                 }
             }
             else
             {
                 Console.WriteLine("This path is not a directory ", currentPath);
             }
+
+            return (ExpansionPaths: newPaths, ValidDirectories: newValidDirectories); ;
+        }
+
+        private void ExamineNextPath()
+        {
+            var currentPath = examinationTasks.Dequeue();
+
+            var (ExpansionPaths, ValidDirectories) = examineSinglePath(currentPath);
+
+            searchResults.AddRange(ValidDirectories);
+
+            foreach (var item in ExpansionPaths)
+            {
+                examinationTasks.Enqueue(item);
+            }
+
+            mainSyncContext.Post(state =>
+            {
+                thisListener.NewFolderFound(ValidDirectories);
+            }, null);
         }
     }
 }

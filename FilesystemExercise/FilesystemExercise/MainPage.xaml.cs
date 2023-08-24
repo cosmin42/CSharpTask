@@ -141,9 +141,12 @@ namespace FilesystemExercise
             WaitingIndicator.IsRunning = false;
         }
 
-        public void NewFolderFound(string folderName)
+        public void NewFolderFound(List<string> folderNames)
         {
-            pathsList.Add(folderName);
+            foreach (var folderName in folderNames)
+            {
+                pathsList.Add(folderName);
+            }
             itemListView.ItemsSource = pathsList;
         }
     }
