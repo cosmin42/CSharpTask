@@ -15,7 +15,9 @@ namespace FilesystemExercise
 
         private const int MAXThreadCount = 32;
 
-        private Queue<string> examinationTasks = new();
+        private Queue<string> bfsQueue = new();
+        private Stack<string> reverseBfs = new();
+        private Queue<(string, bool, long, int)> detailsQueue = new();
 
         readonly TaskConsumerListener thisListener = null;
 
@@ -26,13 +28,13 @@ namespace FilesystemExercise
 
         bool fillingStage = true;
 
-        Stack<string> reverseTasks;
+
         string root;
 
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
-            examinationTasks.Enqueue(rootPath);
+            bfsQueue.Enqueue(rootPath);
             mainSyncContext = returnThread;
             root = rootPath;
         }
@@ -48,7 +50,7 @@ namespace FilesystemExercise
 
             bool cachedPause = pause;
 
-            while (!stop && examinationTasks.Count > 0)
+            while (!stop && bfsQueue.Count > 0)
             {
                 if (!cachedPause && pause)
                 {
@@ -106,11 +108,11 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        void FillNext()
+        private void FillNext()
         {
-            var currentPath = examinationTasks.Dequeue();
+            var currentPath = bfsQueue.Dequeue();
 
-            reverseTasks.Push(currentPath);
+            reverseBfs.Push(currentPath);
 
             IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
             try
@@ -124,18 +126,20 @@ namespace FilesystemExercise
 
             foreach (var directory in directoryEnumeration)
             {
-                examinationTasks.Enqueue(directory);
+                bfsQueue.Enqueue(directory);
             }
 
-            if (examinationTasks.Count == 0)
+            if (bfsQueue.Count == 0)
             {
                 fillingStage = false;
-                while(reverseTasks.Count > 0)
+                while (reverseBfs.Count > 0)
                 {
-                    examinationTasks.Enqueue(reverseTasks.Pop());
+                    detailsQueue.Enqueue((reverseBfs.Pop(), false, 0, 0));
                 }
             }
         }
+
+
 
         private static (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
         {
@@ -196,11 +200,11 @@ namespace FilesystemExercise
 
         private void ExamineNextPath()
         {
-            Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[] dispatchedTasks = new Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[Math.Min(examinationTasks.Count, MAXThreadCount)];
+            Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[] dispatchedTasks = new Task<(List<string> ExpansionPaths, List<string> ValidDirectories)>[Math.Min(bfsQueue.Count, MAXThreadCount)];
 
-            for (var i = 0; i < MAXThreadCount && examinationTasks.Count > 0; ++i)
+            for (var i = 0; i < MAXThreadCount && bfsQueue.Count > 0; ++i)
             {
-                var currentPath = examinationTasks.Dequeue();
+                var currentPath = bfsQueue.Dequeue();
 
                 dispatchedTasks[i] = Task.Run(() => TaskConsumer.ExamineSinglePath(currentPath));
             }
@@ -213,7 +217,7 @@ namespace FilesystemExercise
 
                 foreach (var item in ExpansionPaths)
                 {
-                    examinationTasks.Enqueue(item);
+                    bfsQueue.Enqueue(item);
                 }
 
                 mainSyncContext.Post(state =>
