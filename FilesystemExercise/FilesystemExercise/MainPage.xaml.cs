@@ -67,10 +67,13 @@ namespace FilesystemExercise
 
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
-            if (taskConsumer != null)
+            if (taskConsumer == null)
             {
                 string rootPath = driveInfo.RootDirectory.ToString();
                 taskConsumer = new TaskConsumer(rootPath, this);
+
+                PauseBtn.IsEnabled = true;
+                StopBtn.IsEnabled = true;
             }
         }
 
@@ -81,7 +84,8 @@ namespace FilesystemExercise
 
         public void stopped()
         {
-            throw new NotImplementedException();
+            PauseBtn.IsEnabled = true;
+            StopBtn.IsEnabled = true;
         }
 
         public void finished()
