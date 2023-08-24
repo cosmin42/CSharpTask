@@ -24,21 +24,26 @@ namespace FilesystemExercise
             tasks.Enqueue(rootPath);
         }
 
-        public void Start() { }
+        public void Start() {
+            thisListener.Started();
+        }
 
         public void Stop()
         {
             stop = true;
+            thisListener.Stopped();
         }
 
         public void Pause()
         {
             pause = true;
+            thisListener.Paused();
         }
 
         public void Resume()
         {
             pause = false;
+            thisListener.Resumed();
         }
 
         private void examineNextPath()

@@ -16,14 +16,17 @@ namespace FilesystemExercise
 
         private void OnPauseBtnClicked(object sender, EventArgs e)
         {
+            taskConsumer?.Pause();
         }
 
         private void OnResumeBtnClicked(object sender, EventArgs e)
         {
+            taskConsumer?.Resume();
         }
 
         private void OnStopBtnClicked(object sender, EventArgs e)
         {
+            taskConsumer?.Stop();
         }
 
         public void RefreshDriveList()
@@ -72,8 +75,7 @@ namespace FilesystemExercise
                 string rootPath = driveInfo.RootDirectory.ToString();
                 taskConsumer = new TaskConsumer(rootPath, this);
 
-                PauseBtn.IsEnabled = true;
-                StopBtn.IsEnabled = true;
+                taskConsumer.Start();
             }
         }
 
@@ -112,6 +114,9 @@ namespace FilesystemExercise
             PauseBtn.IsEnabled = false;
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
+
+            WaitingIndicator.IsVisible = false;
+            WaitingIndicator.IsRunning = false;
         }
 
         public void Finished()
