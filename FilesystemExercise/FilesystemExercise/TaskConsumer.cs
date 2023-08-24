@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,7 +106,7 @@ namespace FilesystemExercise
 
             if (!Path.Exists(currentPath))
             {
-                Console.WriteLine("The path " + currentPath + " doesn't exist.");
+                Debug.WriteLine("The path " + currentPath + " doesn't exist.");
                 return (ExpansionPaths: newPaths, ValidDirectories: newValidDirectories);
             }
 
@@ -118,7 +119,7 @@ namespace FilesystemExercise
                 }
                 catch
                 {
-                    Console.WriteLine("Access not permitted");
+                    Debug.WriteLine("Access not permitted");
                 }
 
                 foreach (var file in directoryEnumeration)
@@ -139,7 +140,7 @@ namespace FilesystemExercise
                 }
                 catch
                 {
-                    Console.WriteLine("Access not permitted");
+                    Debug.WriteLine("Access not permitted");
                 }
 
                 foreach (var folder in filesEnumeration)
@@ -149,7 +150,7 @@ namespace FilesystemExercise
             }
             else
             {
-                Console.WriteLine("This path is not a directory ", currentPath);
+                Debug.WriteLine("This path is not a directory ", currentPath);
             }
 
             return (ExpansionPaths: newPaths, ValidDirectories: newValidDirectories); ;
