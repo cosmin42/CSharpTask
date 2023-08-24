@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -163,6 +164,37 @@ namespace FilesystemExercise
             }
             return (filesEnumeration, directoryEnumeration);
         }
+
+
+        private void ProcessPath(string currentPath)
+        {
+            var currentPathDetails = detailsQueue.Dequeue();
+
+            var (files, directories) = GetFilesDirectoriesEnumeration(currentPath);
+
+            var (bigFile, size, count) = (false, (long)0, (int)0);
+
+            foreach(var directory in directories)
+            {
+                if (!details.ContainsKey(directory))
+                {
+                    Debug.WriteLine("The directory occured in the meantime.");
+                }
+                else
+                {
+                    var (localBigFile, localSize, localCount) = details[directory];
+                    (bigFile, size, count) = (bigFile | localBigFile, localSize + size, count + localCount);
+                }
+            }
+
+            foreach(var file in files)
+            {
+                var directoryInfo = new FileInfo(file);
+                (bigFile, size, count) = (bigFile | (directoryInfo.Length > ThresholdFileSize), size + directoryInfo.Length, count + 1);
+            }
+            details[currentPath] = (bigFile, size, count);
+        }
+
 
         private static (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
         {
