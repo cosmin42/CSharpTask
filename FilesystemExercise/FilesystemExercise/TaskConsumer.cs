@@ -181,7 +181,7 @@ namespace FilesystemExercise
 
             var (bigFile, size, count) = (false, (long)0, (int)0);
 
-            foreach(var directory in directories)
+            foreach (var directory in directories)
             {
                 if (!details.ContainsKey(directory))
                 {
@@ -194,7 +194,7 @@ namespace FilesystemExercise
                 }
             }
 
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 var directoryInfo = new FileInfo(file);
                 (bigFile, size, count) = (bigFile | (directoryInfo.Length > ThresholdFileSize), size + directoryInfo.Length, count + 1);
@@ -212,7 +212,7 @@ namespace FilesystemExercise
             {
                 mainSyncContext.Post(state =>
                 {
-                    thisListener.NewFolderFound(new List<string> { currentPath + " " + (size/(1024 * 1024)) + "MB " + count + " files" });
+                    thisListener.NewFolderFound(new List<string> { currentPath + " " + (size / (1024 * 1024)) + "MB " + count + " files" });
                 }, null);
             }
         }
