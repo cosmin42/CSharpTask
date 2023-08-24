@@ -60,6 +60,7 @@ namespace FilesystemExercise
                     {
                         searchResults.Add(currentPath);
                         thisListener.newFolderFound(currentPath);
+                        break;
                     }
                 }
 
