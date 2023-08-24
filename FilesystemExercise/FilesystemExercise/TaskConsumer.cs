@@ -18,32 +18,78 @@ namespace FilesystemExercise
         bool pause = false;
         bool stop = false;
 
-        public TaskConsumer(string rootPath, TaskConsumerListener listener)
+        SynchronizationContext mainSyncContext;
+
+        public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
             tasks.Enqueue(rootPath);
+            mainSyncContext = returnThread;
         }
 
-        public void Start() {
-            thisListener.Started();
+        public async Task Start()
+        {
+            mainSyncContext.Post(state =>
+            {
+                thisListener.Started();
+            }, null);
+
+
+            bool cachedPause = pause;
+
+            while (!stop && tasks.Count() != 0)
+            {
+                if (!cachedPause && pause)
+                {
+                    cachedPause = pause;
+                    mainSyncContext.Post(state =>
+                    {
+                        thisListener.Paused();
+                    }, null);
+                }
+                if (cachedPause && !pause)
+                {
+                    cachedPause = pause;
+                    mainSyncContext.Post(state =>
+                    {
+                        thisListener.Resumed();
+                    }, null);
+                }
+                if (pause)
+                {
+                    await Task.Delay(100);
+                }
+                ExamineNextPath();
+            }
+            if (stop)
+            {
+                mainSyncContext.Post(state =>
+                {
+                    thisListener.Stopped();
+                }, null);
+            }
+            else
+            {
+                mainSyncContext.Post(state =>
+                {
+                    thisListener.Finished();
+                }, null);
+            }
         }
 
         public void Stop()
         {
             stop = true;
-            thisListener.Stopped();
         }
 
         public void Pause()
         {
             pause = true;
-            thisListener.Paused();
         }
 
         public void Resume()
         {
             pause = false;
-            thisListener.Resumed();
         }
 
         public List<string> SearchResults()
@@ -51,7 +97,7 @@ namespace FilesystemExercise
             return searchResults;
         }
 
-        private void examineNextPath()
+        private void ExamineNextPath()
         {
             var currentPath = tasks.Dequeue();
 
@@ -69,7 +115,11 @@ namespace FilesystemExercise
                     if (fileInfo.Length >= ThresholdFileSize)
                     {
                         searchResults.Add(currentPath);
-                        thisListener.NewFolderFound(currentPath);
+                        mainSyncContext.Post(state =>
+                        {
+                            thisListener.NewFolderFound(currentPath);
+                        }, null);
+
                         break;
                     }
                 }

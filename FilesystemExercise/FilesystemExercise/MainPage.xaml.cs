@@ -8,6 +8,8 @@ namespace FilesystemExercise
 
         TaskConsumer taskConsumer = null;
 
+        Task searchTask;
+
         public MainPage()
         {
             InitializeComponent();
@@ -74,11 +76,14 @@ namespace FilesystemExercise
             if (taskConsumer == null)
             {
                 string rootPath = driveInfo.RootDirectory.ToString();
-                taskConsumer = new TaskConsumer(rootPath, this);
+
+                SynchronizationContext mainSyncContext = SynchronizationContext.Current;
+
+                taskConsumer = new TaskConsumer(rootPath, this, mainSyncContext);
 
                 itemListView.ItemsSource = new List<string>();
 
-                taskConsumer.Start();
+                searchTask = Task.Run(taskConsumer.Start);
             }
         }
 
