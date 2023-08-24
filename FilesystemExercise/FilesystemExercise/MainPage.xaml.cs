@@ -11,6 +11,8 @@ namespace FilesystemExercise
 
         Task searchTask;
 
+        bool stoppedConsumer = true;
+
         private ObservableCollection<string> pathsList;
 
         public MainPage()
@@ -39,6 +41,8 @@ namespace FilesystemExercise
         public void RefreshDriveList()
         {
             pathsList.Clear();
+            itemListView.ItemsSource = pathsList;
+
             var driveInfo = DriveInfo.GetDrives();
 
             foreach (var button in driveButtons)
@@ -78,17 +82,23 @@ namespace FilesystemExercise
 
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
-            if (taskConsumer == null)
+
+            if (stoppedConsumer)
             {
+                pathsList.Clear();
+                itemListView.ItemsSource = pathsList;
+
                 string rootPath = driveInfo.RootDirectory.ToString();
 
                 SynchronizationContext mainSyncContext = SynchronizationContext.Current;
 
                 taskConsumer = new TaskConsumer(rootPath, this, mainSyncContext);
 
-                itemListView.ItemsSource = new List<string>();
-
                 searchTask = Task.Run(taskConsumer.Start);
+            }
+            else
+            {
+                // Add popup, the program is still running
             }
         }
 
@@ -130,6 +140,8 @@ namespace FilesystemExercise
 
             WaitingIndicator.IsVisible = false;
             WaitingIndicator.IsRunning = false;
+
+            stoppedConsumer = true;
         }
 
         public void Finished()
