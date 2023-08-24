@@ -13,7 +13,7 @@ namespace FilesystemExercise
     {
         private const int ThresholdFileSize = 10 * 1024 * 1024;
 
-        private const int MAXThreadCount = 4;
+        private const int MAXThreadCount = 32;
 
         private Queue<string> examinationTasks = new();
 
@@ -165,9 +165,7 @@ namespace FilesystemExercise
             {
                 var currentPath = examinationTasks.Dequeue();
 
-                Task<(List<string> ExpansionPaths, List<string> ValidDirectories)> t = Task.Run(() => TaskConsumer.ExamineSinglePath(currentPath));
-
-                dispatchedTasks[i] = t;
+                dispatchedTasks[i] = Task.Run(() => TaskConsumer.ExamineSinglePath(currentPath));
             }
 
             Task.WaitAll(dispatchedTasks);

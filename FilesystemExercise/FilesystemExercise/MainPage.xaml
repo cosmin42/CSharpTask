@@ -44,7 +44,7 @@
                 <HorizontalStackLayout
                     Spacing="25"
                     Padding="30,0"
-                    VerticalOptions="Center"
+                    VerticalOptions="Start"
                     x:Name="searchButtonsLayout">
 
                     <Button
@@ -72,6 +72,13 @@
                         HorizontalOptions="Center" />
 
                     <ActivityIndicator x:Name="WaitingIndicator" IsRunning="False" IsVisible="False" />
+
+                    <Label 
+                        Text="0.0s"
+                        x:Name="StopWatchLabel"
+                        FontSize="24"
+                        HorizontalOptions="Center"
+                        VerticalOptions="CenterAndExpand" />
 
                 </HorizontalStackLayout>
                 <ListView

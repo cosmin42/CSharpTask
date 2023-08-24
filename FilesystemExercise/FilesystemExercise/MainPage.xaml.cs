@@ -13,6 +13,8 @@ namespace FilesystemExercise
 
         private ObservableCollection<string> pathsList;
 
+        private Stopwatch stopwatch = new Stopwatch();
+
         public MainPage()
         {
             InitializeComponent();
@@ -104,12 +106,17 @@ namespace FilesystemExercise
 
         public void Started()
         {
+            StopWatchLabel.Text = "0.0s";
+
             PauseBtn.IsEnabled = true;
             StopBtn.IsEnabled = true;
             ResumeBtn.IsEnabled = false;
 
             WaitingIndicator.IsVisible = true;
             WaitingIndicator.IsRunning = true;
+
+            stopwatch.Reset();
+            stopwatch.Start();
         }
 
         public void Resumed()
@@ -134,6 +141,7 @@ namespace FilesystemExercise
 
         public void Stopped()
         {
+            stopwatch.Reset();
             PauseBtn.IsEnabled = false;
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
@@ -146,8 +154,13 @@ namespace FilesystemExercise
 
         public void Finished()
         {
+            stopwatch.Stop();
+
+            StopWatchLabel.Text = stopwatch.Elapsed.TotalSeconds.ToString() + "s";
+
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
+            PauseBtn.IsEnabled = false;
 
             WaitingIndicator.IsVisible = false;
             WaitingIndicator.IsRunning = false;
