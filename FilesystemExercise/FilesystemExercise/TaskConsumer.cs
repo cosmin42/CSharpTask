@@ -123,10 +123,10 @@ namespace FilesystemExercise
                     Debug.WriteLine("Access not permitted");
                 }
 
-                foreach (var file in directoryEnumeration)
+                foreach (var directory in directoryEnumeration)
                 {
-                    var fileInfo = new FileInfo(file);
-                    if (fileInfo.Length >= ThresholdFileSize)
+                    var directoryInfo = new FileInfo(directory);
+                    if (directoryInfo.Length >= ThresholdFileSize)
                     {
                         newValidDirectories.Add(currentPath);
 
@@ -144,9 +144,9 @@ namespace FilesystemExercise
                     Debug.WriteLine("Access not permitted");
                 }
 
-                foreach (var folder in filesEnumeration)
+                foreach (var file in filesEnumeration)
                 {
-                    newPaths.Add(folder);
+                    newPaths.Add(file);
                 }
             }
             else
