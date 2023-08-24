@@ -32,15 +32,11 @@ namespace FilesystemExercise
 
         bool fillingStage = true;
 
-
-        string root;
-
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
             bfsQueue.Enqueue(rootPath);
             mainSyncContext = returnThread;
-            root = rootPath;
         }
 
         public async Task Start()
