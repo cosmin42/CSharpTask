@@ -15,6 +15,11 @@ namespace FilesystemExercise
             throw new NotImplementedException();
         }
 
+        public void newFolderFound(string folderName)
+        {
+            throw new NotImplementedException();
+        }
+
         public void stopped()
         {
             throw new NotImplementedException();
