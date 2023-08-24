@@ -15,16 +15,14 @@ namespace FilesystemExercise
 
         private const int MAXThreadCount = 4;
 
-        Queue<string> examinationTasks = new();
+        private Queue<string> examinationTasks = new();
 
-        TaskConsumerListener thisListener = null;
+        readonly TaskConsumerListener thisListener = null;
 
-        List<string> searchResults = new();
+        readonly SynchronizationContext mainSyncContext;
 
         bool pause = false;
         bool stop = false;
-
-        SynchronizationContext mainSyncContext;
 
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
@@ -44,7 +42,7 @@ namespace FilesystemExercise
 
             bool cachedPause = pause;
 
-            while (!stop && examinationTasks.Count() != 0)
+            while (!stop && examinationTasks.Count > 0)
             {
                 if (!cachedPause && pause)
                 {
@@ -66,7 +64,10 @@ namespace FilesystemExercise
                 {
                     await Task.Delay(100);
                 }
-                ExamineNextPath();
+                else
+                {
+                    ExamineNextPath();
+                }
             }
             if (stop)
             {
@@ -99,7 +100,7 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        private (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
+        private static (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
         {
             var newPaths = new List<string>();
             var newValidDirectories = new List<string>();
@@ -164,7 +165,7 @@ namespace FilesystemExercise
             {
                 var currentPath = examinationTasks.Dequeue();
 
-                Task<(List<string> ExpansionPaths, List<string> ValidDirectories)> t = Task.Run(() => ExamineSinglePath(currentPath));
+                Task<(List<string> ExpansionPaths, List<string> ValidDirectories)> t = Task.Run(() => TaskConsumer.ExamineSinglePath(currentPath));
 
                 dispatchedTasks[i] = t;
             }
@@ -174,7 +175,6 @@ namespace FilesystemExercise
             foreach (var task in dispatchedTasks)
             {
                 var (ExpansionPaths, ValidDirectories) = task.Result;
-                searchResults.AddRange(ValidDirectories);
 
                 foreach (var item in ExpansionPaths)
                 {

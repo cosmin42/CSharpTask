@@ -7,11 +7,9 @@ namespace FilesystemExercise
     {
         List<Button> driveButtons = new();
 
-        TaskConsumer taskConsumer = null;
+        TaskConsumer fileScanner = null;
 
-        Task searchTask;
-
-        bool stoppedConsumer = true;
+        bool scannerIsStopped = true;
 
         private ObservableCollection<string> pathsList;
 
@@ -25,17 +23,17 @@ namespace FilesystemExercise
 
         private void OnPauseBtnClicked(object sender, EventArgs e)
         {
-            taskConsumer?.Pause();
+            fileScanner?.Pause();
         }
 
         private void OnResumeBtnClicked(object sender, EventArgs e)
         {
-            taskConsumer?.Resume();
+            fileScanner?.Resume();
         }
 
         private void OnStopBtnClicked(object sender, EventArgs e)
         {
-            taskConsumer?.Stop();
+            fileScanner?.Stop();
         }
 
         public void RefreshDriveList()
@@ -43,7 +41,7 @@ namespace FilesystemExercise
             pathsList.Clear();
             itemListView.ItemsSource = pathsList;
 
-            var driveInfo = DriveInfo.GetDrives();
+
 
             foreach (var button in driveButtons)
             {
@@ -51,6 +49,8 @@ namespace FilesystemExercise
             }
 
             driveButtons.Clear();
+
+            var driveInfo = DriveInfo.GetDrives();
 
             foreach (var drive in driveInfo)
             {
@@ -83,7 +83,7 @@ namespace FilesystemExercise
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
 
-            if (stoppedConsumer)
+            if (scannerIsStopped)
             {
                 pathsList.Clear();
                 itemListView.ItemsSource = pathsList;
@@ -92,9 +92,9 @@ namespace FilesystemExercise
 
                 SynchronizationContext mainSyncContext = SynchronizationContext.Current;
 
-                taskConsumer = new TaskConsumer(rootPath, this, mainSyncContext);
+                fileScanner = new TaskConsumer(rootPath, this, mainSyncContext);
 
-                searchTask = Task.Run(taskConsumer.Start);
+                _ = Task.Run(fileScanner.Start);
             }
             else
             {
@@ -141,7 +141,7 @@ namespace FilesystemExercise
             WaitingIndicator.IsVisible = false;
             WaitingIndicator.IsRunning = false;
 
-            stoppedConsumer = true;
+            scannerIsStopped = true;
         }
 
         public void Finished()
