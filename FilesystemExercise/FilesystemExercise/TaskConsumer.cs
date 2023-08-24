@@ -18,6 +18,7 @@ namespace FilesystemExercise
         private Queue<string> bfsQueue = new();
         private Stack<string> reverseBfs = new();
         private Queue<(string, bool, long, int)> detailsQueue = new();
+        private Dictionary<string, (bool, long, int)> details = new();
 
         readonly TaskConsumerListener thisListener = null;
 
@@ -139,7 +140,29 @@ namespace FilesystemExercise
             }
         }
 
+        private static (IEnumerable<string>, IEnumerable<string>) GetFilesDirectoriesEnumeration(string currentPath)
+        {
+            IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
+            try
+            {
+                directoryEnumeration = Directory.EnumerateFiles(currentPath);
+            }
+            catch
+            {
+                Debug.WriteLine("Access not permitted");
+            }
 
+            IEnumerable<string> filesEnumeration = Enumerable.Empty<string>();
+            try
+            {
+                filesEnumeration = Directory.EnumerateDirectories(currentPath);
+            }
+            catch
+            {
+                Debug.WriteLine("Access not permitted");
+            }
+            return (filesEnumeration, directoryEnumeration);
+        }
 
         private static (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
         {
