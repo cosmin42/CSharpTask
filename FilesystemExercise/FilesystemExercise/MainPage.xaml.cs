@@ -75,8 +75,11 @@ namespace FilesystemExercise
 
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
-            string rootPath = driveInfo.RootDirectory.ToString();
-            taskConsumer = new TaskConsumer(rootPath, consumerListener);
+            if (taskConsumer != null)
+            {
+                string rootPath = driveInfo.RootDirectory.ToString();
+                taskConsumer = new TaskConsumer(rootPath, consumerListener);
+            }
         }
     }
 }
