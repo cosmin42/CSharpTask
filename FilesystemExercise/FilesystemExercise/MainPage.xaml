@@ -7,11 +7,13 @@
         <HorizontalStackLayout
             Spacing="25"
             Padding="30,0"
-            VerticalOptions="Center">
+            VerticalOptions="Center"
+            x:Name="mainHorizontalLayout">
             <VerticalStackLayout
                 Spacing="25"
                 Padding="30,0"
-                VerticalOptions="Center">
+                VerticalOptions="Center"
+                x:Name="leftVerticalLayout">
 
                 <Image
                     Source="dotnet_bot.png"
@@ -32,6 +34,12 @@
                     FontSize="18"
                     HorizontalOptions="Center" />
 
+            </VerticalStackLayout>
+            <VerticalStackLayout
+                Spacing="25"
+                Padding="30,0"
+                VerticalOptions="Center"
+                x:Name="rightVerticalLayout">
             </VerticalStackLayout>
         </HorizontalStackLayout>
     </ScrollView>
