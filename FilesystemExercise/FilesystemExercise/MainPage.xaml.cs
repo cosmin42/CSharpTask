@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
-using System.IO;
 
 namespace FilesystemExercise
 {
     public partial class MainPage : ContentPage
     {
         List<Button> driveButtons = new();
+
+        TaskConsumer taskConsumer = null;
 
         public MainPage()
         {
@@ -54,7 +55,8 @@ namespace FilesystemExercise
 
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
-            Console.WriteLine(driveInfo.Name);
+            string rootPath = driveInfo.RootDirectory.ToString();
+            taskConsumer = new TaskConsumer(rootPath);
         }
     }
 }
