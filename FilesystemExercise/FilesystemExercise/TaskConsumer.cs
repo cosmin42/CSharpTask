@@ -30,6 +30,7 @@ namespace FilesystemExercise
 
         public async Task Start()
         {
+            stop = false;
             mainSyncContext.Post(state =>
             {
                 thisListener.Started();
