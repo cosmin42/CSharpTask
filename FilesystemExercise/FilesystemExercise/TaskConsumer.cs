@@ -15,11 +15,11 @@ namespace FilesystemExercise
             tasks.Enqueue(rootPath);
         }
 
-        public void start() { }
+        public void Start() { }
 
-        public void stop() { }
+        public void Stop() { }
 
-        public void pause() { }
+        public void Ppause() { }
 
 
     }
