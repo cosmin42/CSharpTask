@@ -20,7 +20,6 @@ namespace FilesystemExercise
 
         private Queue<string> bfsQueue = new();
         private Stack<string> reverseBfs = new();
-        private Queue<string> detailsQueue = new();
         private ConcurrentDictionary<string, (bool, long, int)> details = new();
 
         readonly TaskConsumerListener thisListener = null;
@@ -50,7 +49,7 @@ namespace FilesystemExercise
 
             bool cachedPause = pause;
 
-            while (!stop && (bfsQueue.Count > 0 || detailsQueue.Count > 0))
+            while (!stop && bfsQueue.Count > 0)
             {
                 if (!cachedPause && pause)
                 {
@@ -141,7 +140,7 @@ namespace FilesystemExercise
                 fillingStage = false;
                 while (reverseBfs.Count > 0)
                 {
-                    detailsQueue.Enqueue(reverseBfs.Pop());
+                    bfsQueue.Enqueue(reverseBfs.Pop());
                 }
             }
         }
@@ -202,7 +201,7 @@ namespace FilesystemExercise
 
         private void ProcessNextPath()
         {
-            var currentPath = detailsQueue.Dequeue();
+            var currentPath = bfsQueue.Dequeue();
             var (bigFile, size, count) = ProcessPath(currentPath);
             if (bigFile)
             {
