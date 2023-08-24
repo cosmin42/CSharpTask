@@ -12,6 +12,7 @@ namespace FilesystemExercise
         {
             InitializeComponent();
             RefreshDriveList();
+            itemListView.ItemsSource = new List<string>();
         }
 
         private void OnPauseBtnClicked(object sender, EventArgs e)
@@ -75,6 +76,8 @@ namespace FilesystemExercise
                 string rootPath = driveInfo.RootDirectory.ToString();
                 taskConsumer = new TaskConsumer(rootPath, this);
 
+                itemListView.ItemsSource = new List<string>();
+
                 taskConsumer.Start();
             }
         }
@@ -131,7 +134,7 @@ namespace FilesystemExercise
 
         public void NewFolderFound(string folderName)
         {
-            throw new NotImplementedException();
+            itemListView.ItemsSource = taskConsumer.SearchResults();
         }
     }
 }

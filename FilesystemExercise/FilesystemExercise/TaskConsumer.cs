@@ -46,6 +46,11 @@ namespace FilesystemExercise
             thisListener.Resumed();
         }
 
+        public List<string> SearchResults()
+        {
+            return searchResults;
+        }
+
         private void examineNextPath()
         {
             var currentPath = tasks.Dequeue();
