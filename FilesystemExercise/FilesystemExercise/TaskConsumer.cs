@@ -10,7 +10,7 @@ namespace FilesystemExercise
     {
         private const int ThresholdFileSize = 10 * 1024 * 1024;
 
-        Queue<string> tasks = new();
+        Queue<string> examinationTasks = new();
         TaskConsumerListener thisListener = null;
 
         List<string> searchResults = new();
@@ -23,7 +23,7 @@ namespace FilesystemExercise
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
-            tasks.Enqueue(rootPath);
+            examinationTasks.Enqueue(rootPath);
             mainSyncContext = returnThread;
         }
 
@@ -37,7 +37,7 @@ namespace FilesystemExercise
 
             bool cachedPause = pause;
 
-            while (!stop && tasks.Count() != 0)
+            while (!stop && examinationTasks.Count() != 0)
             {
                 if (!cachedPause && pause)
                 {
@@ -99,7 +99,7 @@ namespace FilesystemExercise
 
         private void ExamineNextPath()
         {
-            var currentPath = tasks.Dequeue();
+            var currentPath = examinationTasks.Dequeue();
 
             if (!Path.Exists(currentPath))
             {
@@ -126,7 +126,7 @@ namespace FilesystemExercise
 
                 foreach (var folder in Directory.EnumerateDirectories(currentPath))
                 {
-                    tasks.Enqueue(folder);
+                    examinationTasks.Enqueue(folder);
                 }
             }
             else
