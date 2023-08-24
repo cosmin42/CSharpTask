@@ -2,11 +2,31 @@
 
 namespace FilesystemExercise
 {
+
+    public class ConsumerListenerImpl : TaskConsumerListener
+    {
+        public void cancelled()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void finished()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void stopped()
+        {
+            throw new NotImplementedException();
+        }
+    }
     public partial class MainPage : ContentPage
     {
         List<Button> driveButtons = new();
 
         TaskConsumer taskConsumer = null;
+
+        ConsumerListenerImpl consumerListener = new();
 
         public MainPage()
         {
@@ -56,7 +76,7 @@ namespace FilesystemExercise
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
             string rootPath = driveInfo.RootDirectory.ToString();
-            taskConsumer = new TaskConsumer(rootPath);
+            taskConsumer = new TaskConsumer(rootPath, consumerListener);
         }
     }
 }

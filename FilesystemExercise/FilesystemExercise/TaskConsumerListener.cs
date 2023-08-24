@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FilesystemExercise
 {
-    interface TaskConsumerListener
+    public interface TaskConsumerListener
     {
         void cancelled();
         void stopped();

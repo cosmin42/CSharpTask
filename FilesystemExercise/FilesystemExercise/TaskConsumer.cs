@@ -9,12 +9,14 @@ namespace FilesystemExercise
     public class TaskConsumer
     {
         Queue<string> tasks = new();
+        TaskConsumerListener thisListener = null;
 
         bool pause = false;
         bool stop = false;
 
-        public TaskConsumer(string rootPath)
+        public TaskConsumer(string rootPath, TaskConsumerListener listener)
         {
+            thisListener = listener;
             tasks.Enqueue(rootPath);
         }
 
