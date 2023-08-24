@@ -77,28 +77,54 @@ namespace FilesystemExercise
             }
         }
 
-        public void paused()
+        public void Started()
+        {
+            PauseBtn.IsEnabled = true;
+            StopBtn.IsEnabled = true;
+            ResumeBtn.IsEnabled = false;
+
+            WaitingIndicator.IsVisible = true;
+            WaitingIndicator.IsRunning = true;
+        }
+
+        public void Resumed()
+        {
+            PauseBtn.IsEnabled = true;
+            StopBtn.IsEnabled = true;
+            ResumeBtn.IsEnabled = false;
+
+            WaitingIndicator.IsVisible = true;
+            WaitingIndicator.IsRunning = true;
+        }
+
+        public void Paused()
         {
             PauseBtn.IsEnabled = false;
-            StopBtn.IsEnabled = false;
+            StopBtn.IsEnabled = true;
             ResumeBtn.IsEnabled = true;
+
+            WaitingIndicator.IsVisible = false;
+            WaitingIndicator.IsRunning = false;
         }
 
-        public void stopped()
+        public void Stopped()
         {
             PauseBtn.IsEnabled = false;
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
         }
 
-        public void finished()
+        public void Finished()
         {
             PauseBtn.IsEnabled = false;
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
+
+            WaitingIndicator.IsVisible = false;
+            WaitingIndicator.IsRunning = false;
         }
 
-        public void newFolderFound(string folderName)
+        public void NewFolderFound(string folderName)
         {
             throw new NotImplementedException();
         }

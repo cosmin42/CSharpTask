@@ -8,10 +8,13 @@ namespace FilesystemExercise
 {
     public interface TaskConsumerListener
     {
-        void paused();
-        void stopped();
-        void finished();
+        void Started();
 
-        void newFolderFound(string folderName);
+        void Resumed();
+        void Paused();
+        void Stopped();
+        void Finished();
+
+        void NewFolderFound(string folderName);
     }
 }
