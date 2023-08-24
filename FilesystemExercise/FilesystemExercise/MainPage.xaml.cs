@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace FilesystemExercise
 {
@@ -10,11 +11,14 @@ namespace FilesystemExercise
 
         Task searchTask;
 
+        private ObservableCollection<string> pathsList;
+
         public MainPage()
         {
             InitializeComponent();
+            pathsList = new ObservableCollection<string>();
+            itemListView.ItemsSource = pathsList;
             RefreshDriveList();
-            itemListView.ItemsSource = new List<string>();
         }
 
         private void OnPauseBtnClicked(object sender, EventArgs e)
@@ -34,6 +38,7 @@ namespace FilesystemExercise
 
         public void RefreshDriveList()
         {
+            pathsList.Clear();
             var driveInfo = DriveInfo.GetDrives();
 
             foreach (var button in driveButtons)
@@ -129,7 +134,6 @@ namespace FilesystemExercise
 
         public void Finished()
         {
-            PauseBtn.IsEnabled = false;
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
 
@@ -139,7 +143,8 @@ namespace FilesystemExercise
 
         public void NewFolderFound(string folderName)
         {
-            itemListView.ItemsSource = taskConsumer.SearchResults();
+            pathsList.Add(folderName);
+            itemListView.ItemsSource = pathsList;
         }
     }
 }

@@ -92,11 +92,6 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        public List<string> SearchResults()
-        {
-            return searchResults;
-        }
-
         private void ExamineNextPath()
         {
             var currentPath = examinationTasks.Dequeue();
@@ -134,7 +129,5 @@ namespace FilesystemExercise
                 Console.WriteLine("This path is not a directory ", currentPath);
             }
         }
-
-
     }
 }
