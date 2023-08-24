@@ -74,6 +74,14 @@
                     <ActivityIndicator x:Name="WaitingIndicator" IsRunning="False" IsVisible="False" />
 
                 </HorizontalStackLayout>
+                <ListView VerticalOptions="StartAndExpand"
+                    x:Name="itemListView">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextCell Text="{Binding}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </VerticalStackLayout>
         </HorizontalStackLayout>
     </ScrollView>
