@@ -38,8 +38,9 @@
             <VerticalStackLayout
                 Spacing="25"
                 Padding="30,0"
-                VerticalOptions="Center"
+                VerticalOptions="StartAndExpand"
                 x:Name="rightVerticalLayout">
+
             </VerticalStackLayout>
         </HorizontalStackLayout>
     </ScrollView>
