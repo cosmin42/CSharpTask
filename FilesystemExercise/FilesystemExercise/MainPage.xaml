@@ -41,6 +41,12 @@
                 VerticalOptions="StartAndExpand"
                 x:Name="rightVerticalLayout">
 
+                <HorizontalStackLayout
+                    Spacing="25"
+                    Padding="30,0"
+                    VerticalOptions="Center"
+                    x:Name="searchButtonsLayout">
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </HorizontalStackLayout>
     </ScrollView>
