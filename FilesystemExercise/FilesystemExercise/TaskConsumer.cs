@@ -10,6 +10,9 @@ namespace FilesystemExercise
     {
         Queue<string> tasks = new();
 
+        bool pause = false;
+        bool stop = false;
+
         public TaskConsumer(string rootPath)
         {
             tasks.Enqueue(rootPath);
@@ -17,9 +20,20 @@ namespace FilesystemExercise
 
         public void Start() { }
 
-        public void Stop() { }
+        public void Stop()
+        {
+            stop = true;
+        }
 
-        public void Pause() { }
+        public void Pause()
+        {
+            pause = true;
+        }
+
+        public void Resume()
+        {
+            pause = false;
+        }
 
 
     }
