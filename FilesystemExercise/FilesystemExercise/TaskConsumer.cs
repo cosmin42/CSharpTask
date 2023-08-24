@@ -24,11 +24,17 @@ namespace FilesystemExercise
         bool pause = false;
         bool stop = false;
 
+        bool fillingStage = true;
+
+        Stack<string> reverseTasks;
+        string root;
+
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
             examinationTasks.Enqueue(rootPath);
             mainSyncContext = returnThread;
+            root = rootPath;
         }
 
         public async Task Start()
@@ -98,6 +104,37 @@ namespace FilesystemExercise
         public void Resume()
         {
             pause = false;
+        }
+
+        void FillNext()
+        {
+            var currentPath = examinationTasks.Dequeue();
+
+            reverseTasks.Push(currentPath);
+
+            IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
+            try
+            {
+                directoryEnumeration = Directory.EnumerateFiles(currentPath);
+            }
+            catch
+            {
+                Debug.WriteLine("Access not permitted");
+            }
+
+            foreach (var directory in directoryEnumeration)
+            {
+                examinationTasks.Enqueue(directory);
+            }
+
+            if (examinationTasks.Count == 0)
+            {
+                fillingStage = false;
+                while(reverseTasks.Count > 0)
+                {
+                    examinationTasks.Enqueue(reverseTasks.Pop());
+                }
+            }
         }
 
         private static (List<string> ExpansionPaths, List<string> ValidDirectories) ExamineSinglePath(string currentPath)
