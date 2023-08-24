@@ -41,7 +41,7 @@ namespace FilesystemExercise
             pause = false;
         }
 
-        private void examinePath()
+        private void examineNextPath()
         {
             var currentPath = tasks.Dequeue();
 
