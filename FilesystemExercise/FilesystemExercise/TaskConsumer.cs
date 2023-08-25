@@ -18,8 +18,8 @@ namespace FilesystemExercise
 
         private const int MAXThreadCount = 32;
 
-        private Queue<string> bfsQueue = new();
-        private Stack<string> reverseBfs = new();
+        private Queue<(string, int)> bfsQueue = new();
+        private Stack<(string, int)> reverseBfs = new();
         private ConcurrentDictionary<string, (bool, long, int)> details = new();
 
         readonly TaskConsumerListener thisListener = null;
@@ -34,7 +34,7 @@ namespace FilesystemExercise
         public TaskConsumer(string rootPath, TaskConsumerListener listener, SynchronizationContext returnThread)
         {
             thisListener = listener;
-            bfsQueue.Enqueue(rootPath);
+            bfsQueue.Enqueue((rootPath, 0));
             mainSyncContext = returnThread;
         }
 
@@ -123,7 +123,7 @@ namespace FilesystemExercise
             IEnumerable<string> directoryEnumeration = Enumerable.Empty<string>();
             try
             {
-                directoryEnumeration = Directory.EnumerateDirectories(currentPath);
+                directoryEnumeration = Directory.EnumerateDirectories(currentPath.Item1);
             }
             catch
             {
@@ -132,7 +132,7 @@ namespace FilesystemExercise
 
             foreach (var directory in directoryEnumeration)
             {
-                bfsQueue.Enqueue(directory);
+                bfsQueue.Enqueue((directory, currentPath.Item2 + 1));
             }
 
             if (bfsQueue.Count == 0)
@@ -170,7 +170,7 @@ namespace FilesystemExercise
         }
 
 
-        private (bool, long, int) ProcessPath(string currentPath)
+        private void ProcessPath(string currentPath)
         {
             var (files, directories) = GetFilesDirectoriesEnumeration(currentPath);
 
@@ -196,13 +196,6 @@ namespace FilesystemExercise
             }
             details[currentPath] = (bigFile, size, count);
 
-            return (bigFile, size, count);
-        }
-
-        private void ProcessNextPath()
-        {
-            var currentPath = bfsQueue.Dequeue();
-            var (bigFile, size, count) = ProcessPath(currentPath);
             if (bigFile)
             {
                 mainSyncContext.Post(state =>
@@ -210,6 +203,34 @@ namespace FilesystemExercise
                     thisListener.NewFolderFound(new List<string> { currentPath + " " + (size / (1024 * 1024)) + "MB " + count + " files" });
                 }, null);
             }
+        }
+
+        private void ProcessNextPath()
+        {
+            var currentPath = bfsQueue.Dequeue();
+            var threadsCount = 1;
+
+            List<Task> dispatchedTasks = new();
+
+            dispatchedTasks.Add(Task.Run(() => ProcessPath(currentPath.Item1)));
+
+            if (bfsQueue.Count > 0)
+            {
+                while (currentPath.Item2 == bfsQueue.Peek().Item2 && threadsCount < MAXThreadCount)
+                {
+                    var nextCurrentPath = bfsQueue.Dequeue();
+                    dispatchedTasks.Add(Task.Run(() => ProcessPath(nextCurrentPath.Item1)));
+                    threadsCount++;
+                }
+            }
+
+            Debug.WriteLine(threadsCount + " Threads in the same time, remaining " + bfsQueue.Count);
+
+            foreach (var task in dispatchedTasks)
+            {
+                task.Wait();
+            }
+
         }
     }
 }
