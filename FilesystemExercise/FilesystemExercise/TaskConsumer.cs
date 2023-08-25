@@ -22,7 +22,7 @@ namespace FilesystemExercise
         private Stack<(string, int)> reverseBfs = new();
         private ConcurrentDictionary<string, (bool, long, int)> details = new();
 
-        private List<string> foundPaths;
+        private List<string> foundPaths = new();
 
         readonly TaskConsumerListener thisListener = null;
 
@@ -205,6 +205,38 @@ namespace FilesystemExercise
                 {
                     thisListener.NewFolderFound(new List<string> { currentPath + " " + (size / (1024 * 1024)) + "MB " + count + " files" });
                 }, null);
+            }
+        }
+
+        public void ProcessChangedFile(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                {
+                    var fileInfo = new FileInfo(path);
+                    if (fileInfo.Length > ThresholdFileSize)
+                    {
+                        string directory = Path.GetDirectoryName(path);
+
+                        while (!string.IsNullOrEmpty(directory))
+                        {
+                            if (details.ContainsKey(directory))
+                            {
+                                var (_, size, count) = details[directory];
+                                mainSyncContext.Post(state =>
+                                {
+                                    thisListener.Replace(path, path + " " + (size / (1024 * 1024)) + "MB " + count + " files");
+                                }, null);
+                            }
+                            directory = Path.GetDirectoryName(directory);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                Debug.Write("Access permission needed.");
             }
         }
 

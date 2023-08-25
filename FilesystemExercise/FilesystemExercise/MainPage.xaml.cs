@@ -15,6 +15,10 @@ namespace FilesystemExercise
 
         private Stopwatch stopwatch = new Stopwatch();
 
+        private FileSystemWatcher watcher;
+
+        private string drivePath;
+
         public MainPage()
         {
             InitializeComponent();
@@ -84,17 +88,16 @@ namespace FilesystemExercise
 
         public void OnDriveButtonClicked(DriveInfo driveInfo)
         {
-
             if (scannerIsStopped)
             {
                 pathsList.Clear();
                 itemListView.ItemsSource = pathsList;
 
-                string rootPath = driveInfo.RootDirectory.ToString();
+                drivePath = driveInfo.RootDirectory.ToString();
 
                 SynchronizationContext mainSyncContext = SynchronizationContext.Current;
 
-                fileScanner = new TaskConsumer(rootPath, this, mainSyncContext);
+                fileScanner = new TaskConsumer(drivePath, this, mainSyncContext);
 
                 _ = Task.Run(fileScanner.Start);
             }
@@ -164,6 +167,25 @@ namespace FilesystemExercise
 
             WaitingIndicator.IsVisible = false;
             WaitingIndicator.IsRunning = false;
+
+            watcher = new FileSystemWatcher(drivePath)
+            {
+                NotifyFilter = NotifyFilters.DirectoryName
+                                 | NotifyFilters.FileName
+                                 | NotifyFilters.LastWrite
+                                 | NotifyFilters.Size
+            };
+
+            watcher.Changed += (object sender, FileSystemEventArgs e) =>
+            {
+                if (e.ChangeType != WatcherChangeTypes.Changed)
+                {
+                    return;
+                }
+                _ = Task.Run(() => fileScanner.ProcessChangedFile(e.FullPath));
+            };
+
+
         }
 
         public void NewFolderFound(List<string> folderNames)
@@ -172,6 +194,20 @@ namespace FilesystemExercise
             {
                 pathsList.Add(folderName);
             }
+            itemListView.ItemsSource = pathsList;
+        }
+
+        public void Replace(string oldPath, string newPath)
+        {
+            foreach(var path in pathsList)
+            {
+                if (path.Contains(oldPath))
+                {
+                    pathsList.Remove(path);
+                    break;
+                }
+            }
+            pathsList.Add(newPath);
             itemListView.ItemsSource = pathsList;
         }
     }

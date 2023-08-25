@@ -14,5 +14,8 @@ namespace FilesystemExercise
         void Stopped();
         void Finished();
         void NewFolderFound(List<string> folderName);
+        void Replace(string oldPath, string newPath);
+
+
     }
 }
