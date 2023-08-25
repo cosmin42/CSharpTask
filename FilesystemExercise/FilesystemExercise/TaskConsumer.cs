@@ -203,7 +203,7 @@ namespace FilesystemExercise
                 foundPaths.Add(currentPath);
                 mainSyncContext.Post(state =>
                 {
-                    thisListener.NewFolderFound(new List<string> { currentPath + " " + (size / (1024 * 1024)) + "MB " + count + " files" });
+                    thisListener.NewFolderFound((currentPath, size, count));
                 }, null);
             }
         }

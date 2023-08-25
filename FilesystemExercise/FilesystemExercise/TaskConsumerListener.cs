@@ -13,7 +13,7 @@ namespace FilesystemExercise
         void Paused();
         void Stopped();
         void Finished();
-        void NewFolderFound(List<string> folderName);
+        void NewFolderFound((string, long, int) folderDetails);
         void Replace(string oldPath, string newPath);
 
 

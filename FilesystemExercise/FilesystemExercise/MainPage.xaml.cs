@@ -188,12 +188,11 @@ namespace FilesystemExercise
 
         }
 
-        public void NewFolderFound(List<string> folderNames)
+        public void NewFolderFound((string, long, int) folderDetails)
         {
-            foreach (var folderName in folderNames)
-            {
-                pathsList.Add(folderName);
-            }
+            var (path, size, count) = folderDetails;
+            pathsList.Add(path + " " + (size / (1024 * 1024)) + "MB " + count + " files");
+
             itemListView.ItemsSource = pathsList;
         }
 
