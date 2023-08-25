@@ -84,10 +84,15 @@
                 <ListView
                     VerticalOptions="Start"
                     MaximumHeightRequest="500"
+                    MaximumWidthRequest="420"
                     x:Name="itemListView">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextCell Text="{Binding}" />
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding}" LineBreakMode="WordWrap" />
+                                </StackLayout>
+                            </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
