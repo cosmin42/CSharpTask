@@ -47,8 +47,6 @@ namespace FilesystemExercise
             pathsList.Clear();
             itemListView.ItemsSource = pathsList;
 
-
-
             foreach (var button in driveButtons)
             {
                 leftVerticalLayout.Children.Remove(button);
@@ -56,7 +54,16 @@ namespace FilesystemExercise
 
             driveButtons.Clear();
 
-            var driveInfo = DriveInfo.GetDrives();
+            DriveInfo[] driveInfo = null;
+            try
+            {
+                driveInfo = DriveInfo.GetDrives();
+            }
+            catch
+            {
+                Debug.WriteLine("Exception on drive retrieving.");
+                return;
+            }
 
             foreach (var drive in driveInfo)
             {
@@ -164,7 +171,7 @@ namespace FilesystemExercise
         {
             stopwatch.Stop();
 
-            StopWatchLabel.Text = stopwatch.Elapsed.TotalSeconds.ToString() + "s";
+            StopWatchLabel.Text = stopwatch.Elapsed.TotalSeconds.ToString("0.00") + "s";
 
             StopBtn.IsEnabled = false;
             ResumeBtn.IsEnabled = false;
