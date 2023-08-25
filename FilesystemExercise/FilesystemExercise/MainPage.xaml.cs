@@ -13,7 +13,7 @@ namespace FilesystemExercise
 
         private ObservableCollection<string> pathsList;
 
-        private Stopwatch stopwatch = new Stopwatch();
+        private Stopwatch stopwatch = new();
 
         private FileSystemWatcher watcher;
 
@@ -90,6 +90,7 @@ namespace FilesystemExercise
         {
             if (scannerIsStopped)
             {
+                scannerIsStopped = false;
                 if (watcher != null)
                 {
                     watcher.Dispose();
@@ -174,8 +175,7 @@ namespace FilesystemExercise
 
             watcher = new FileSystemWatcher(drivePath)
             {
-                NotifyFilter = NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
+                NotifyFilter = NotifyFilters.FileName
                                  | NotifyFilters.LastWrite
                                  | NotifyFilters.Size
             };
@@ -186,8 +186,7 @@ namespace FilesystemExercise
                 {
                     return;
                 }
-
-                _ = Task.Run(() => fileScanner.ProcessDeletedFile(e.FullPath));
+                fileScanner.ProcessDeletedFile(e.FullPath);
             };
 
             watcher.Created += (object sender, FileSystemEventArgs e) =>
@@ -196,10 +195,11 @@ namespace FilesystemExercise
                 {
                     return;
                 }
-
-                _ = Task.Run(() => fileScanner.ProcessCreatedFile(e.FullPath));
+                fileScanner.ProcessCreatedFile(e.FullPath);
             };
 
+            watcher.EnableRaisingEvents = true;
+            watcher.IncludeSubdirectories = true;
         }
 
         public void NewFolderFound((string, long, int) folderDetails)
@@ -228,16 +228,17 @@ namespace FilesystemExercise
 
         public void Remove(string toBeRemoved)
         {
-            if (toBeRemoved.Length == 0)
-            { 
+            if (string.IsNullOrEmpty(toBeRemoved))
+            {
                 return;
             }
 
-            foreach (var path in pathsList)
+            // MAUI seems to have a problem with removing the first element in an ObservableList by value
+            for (var i = 0; i < pathsList.Count; ++i)
             {
-                if (path.Contains(toBeRemoved))
+                if (pathsList[i].Contains(toBeRemoved + " "))
                 {
-                    pathsList.Remove(path);
+                    pathsList.RemoveAt(i);
                     break;
                 }
             }

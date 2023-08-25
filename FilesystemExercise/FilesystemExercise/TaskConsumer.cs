@@ -216,17 +216,17 @@ namespace FilesystemExercise
                 Path.GetDirectoryName(path);
                 string directory = Path.GetDirectoryName(path);
 
-                while (directory.Length > 0)
+                while (!string.IsNullOrEmpty(directory))
                 {
-                    if (Directory.Exists(path))
+                    if (Directory.Exists(directory))
                     {
                         mainSyncContext.Post(_ =>
                         {
-                            thisListener.Remove(path);
+                            thisListener.Remove(directory);
                         }, null);
-                        ProcessPath(path);
+                        ProcessPath(directory);
                     }
-                    directory = Path.GetDirectoryName(path);
+                    directory = Path.GetDirectoryName(directory);
                 }
                 details.Clear();
             }
@@ -247,17 +247,17 @@ namespace FilesystemExercise
                 Path.GetDirectoryName(path);
                 string directory = Path.GetDirectoryName(path);
 
-                while (directory.Length > 0)
+                while (!string.IsNullOrEmpty(directory))
                 {
-                    if (Directory.Exists(path))
+                    if (Directory.Exists(directory))
                     {
                         mainSyncContext.Post(_ =>
                         {
-                            thisListener.Remove(path);
+                            thisListener.Remove(directory);
                         }, null);
-                        ProcessPath(path);
+                        ProcessPath(directory);
                     }
-                    directory = Path.GetDirectoryName(path);
+                    directory = Path.GetDirectoryName(directory);
                 }
                 details.Clear();
             }
