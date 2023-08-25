@@ -186,6 +186,16 @@ namespace FilesystemExercise
                 _ = Task.Run(() => fileScanner.ProcessDeletedFile(e.FullPath));
             };
 
+            watcher.Created += (object sender, FileSystemEventArgs e) =>
+            {
+                if (e.ChangeType != WatcherChangeTypes.Created)
+                {
+                    return;
+                }
+
+                _ = Task.Run(() => fileScanner.ProcessCreatedFile(e.FullPath));
+            };
+
         }
 
         public void NewFolderFound((string, long, int) folderDetails)

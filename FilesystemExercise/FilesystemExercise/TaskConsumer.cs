@@ -236,6 +236,37 @@ namespace FilesystemExercise
             }
         }
 
+        public void ProcessCreatedFile(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    return;
+                }
+                Path.GetDirectoryName(path);
+                string directory = Path.GetDirectoryName(path);
+
+                while (directory.Length > 0)
+                {
+                    if (Directory.Exists(path))
+                    {
+                        mainSyncContext.Post(_ =>
+                        {
+                            thisListener.Remove(path);
+                        }, null);
+                        ProcessPath(path);
+                    }
+                    directory = Path.GetDirectoryName(path);
+                }
+                details.Clear();
+            }
+            catch
+            {
+                Debug.Write("Access permission needed.");
+            }
+        }
+
         private void ProcessNextPath()
         {
             var currentPath = bfsQueue.Dequeue();
