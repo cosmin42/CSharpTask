@@ -90,6 +90,10 @@ namespace FilesystemExercise
         {
             if (scannerIsStopped)
             {
+                if (watcher != null)
+                {
+                    watcher.Dispose();
+                }
                 pathsList.Clear();
                 itemListView.ItemsSource = pathsList;
 
