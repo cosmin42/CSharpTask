@@ -85,6 +85,7 @@ namespace FilesystemExercise
                     }
                 }
             }
+            details.Clear();
             if (stop)
             {
                 mainSyncContext.Post(state =>
@@ -208,31 +209,26 @@ namespace FilesystemExercise
             }
         }
 
-        public void ProcessChangedFile(string path)
+        public void ProcessDeletedFile(string path)
         {
             try
             {
-                if (File.Exists(path))
-                {
-                    var fileInfo = new FileInfo(path);
-                    if (fileInfo.Length > ThresholdFileSize)
-                    {
-                        string directory = Path.GetDirectoryName(path);
+                Path.GetDirectoryName(path);
+                string directory = Path.GetDirectoryName(path);
 
-                        while (!string.IsNullOrEmpty(directory))
+                while (directory.Length > 0)
+                {
+                    if (Directory.Exists(path))
+                    {
+                        mainSyncContext.Post(_ =>
                         {
-                            if (details.ContainsKey(directory))
-                            {
-                                var (_, size, count) = details[directory];
-                                mainSyncContext.Post(state =>
-                                {
-                                    thisListener.Replace(path, (path, size, count));
-                                }, null);
-                            }
-                            directory = Path.GetDirectoryName(directory);
-                        }
+                            thisListener.Remove(path);
+                        }, null);
+                        ProcessPath(path);
                     }
+                    directory = Path.GetDirectoryName(path);
                 }
+                details.Clear();
             }
             catch
             {

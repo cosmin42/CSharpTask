@@ -176,15 +176,15 @@ namespace FilesystemExercise
                                  | NotifyFilters.Size
             };
 
-            watcher.Changed += (object sender, FileSystemEventArgs e) =>
+            watcher.Deleted += (object sender, FileSystemEventArgs e) =>
             {
-                if (e.ChangeType != WatcherChangeTypes.Changed)
+                if (e.ChangeType != WatcherChangeTypes.Deleted)
                 {
                     return;
                 }
-                _ = Task.Run(() => fileScanner.ProcessChangedFile(e.FullPath));
-            };
 
+                _ = Task.Run(() => fileScanner.ProcessDeletedFile(e.FullPath));
+            };
 
         }
 
@@ -198,7 +198,7 @@ namespace FilesystemExercise
 
         public void Replace(string oldPath, (string, long, int) newFolderDetails)
         {
-            foreach(var path in pathsList)
+            foreach (var path in pathsList)
             {
                 if (path.Contains(oldPath))
                 {
@@ -209,6 +209,25 @@ namespace FilesystemExercise
             var (newPath, newSize, newCount) = newFolderDetails;
 
             pathsList.Add(newPath + " " + (newSize / (1024 * 1024)) + "MB " + newCount + " files");
+            itemListView.ItemsSource = pathsList;
+        }
+
+        public void Remove(string toBeRemoved)
+        {
+            if (toBeRemoved.Length == 0)
+            { 
+                return;
+            }
+
+            foreach (var path in pathsList)
+            {
+                if (path.Contains(toBeRemoved))
+                {
+                    pathsList.Remove(path);
+                    break;
+                }
+            }
+
             itemListView.ItemsSource = pathsList;
         }
     }
