@@ -200,6 +200,8 @@ namespace FilesystemExercise
 
             watcher.EnableRaisingEvents = true;
             watcher.IncludeSubdirectories = true;
+
+            scannerIsStopped = true;
         }
 
         public void NewFolderFound((string, long, int) folderDetails)
