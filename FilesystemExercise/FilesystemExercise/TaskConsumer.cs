@@ -22,6 +22,8 @@ namespace FilesystemExercise
         private Stack<(string, int)> reverseBfs = new();
         private ConcurrentDictionary<string, (bool, long, int)> details = new();
 
+        private List<string> foundPaths;
+
         readonly TaskConsumerListener thisListener = null;
 
         readonly SynchronizationContext mainSyncContext;
@@ -198,6 +200,7 @@ namespace FilesystemExercise
 
             if (bigFile)
             {
+                foundPaths.Add(currentPath);
                 mainSyncContext.Post(state =>
                 {
                     thisListener.NewFolderFound(new List<string> { currentPath + " " + (size / (1024 * 1024)) + "MB " + count + " files" });
