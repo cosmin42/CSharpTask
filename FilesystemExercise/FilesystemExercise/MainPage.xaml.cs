@@ -196,7 +196,7 @@ namespace FilesystemExercise
             itemListView.ItemsSource = pathsList;
         }
 
-        public void Replace(string oldPath, string newPath)
+        public void Replace(string oldPath, (string, long, int) newFolderDetails)
         {
             foreach(var path in pathsList)
             {
@@ -206,7 +206,9 @@ namespace FilesystemExercise
                     break;
                 }
             }
-            pathsList.Add(newPath);
+            var (newPath, newSize, newCount) = newFolderDetails;
+
+            pathsList.Add(newPath + " " + (newSize / (1024 * 1024)) + "MB " + newCount + " files");
             itemListView.ItemsSource = pathsList;
         }
     }

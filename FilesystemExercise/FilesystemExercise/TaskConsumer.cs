@@ -226,7 +226,7 @@ namespace FilesystemExercise
                                 var (_, size, count) = details[directory];
                                 mainSyncContext.Post(state =>
                                 {
-                                    thisListener.Replace(path, path + " " + (size / (1024 * 1024)) + "MB " + count + " files");
+                                    thisListener.Replace(path, (path, size, count));
                                 }, null);
                             }
                             directory = Path.GetDirectoryName(directory);
